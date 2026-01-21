@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8">
+    <title>Information</title>
+  </head>
+  <body >
+    <div style="width: 100%; height: 100%; margin: 100px 40px 60px 40px; font-family: Arial, sans-serif;">
+      <p>
+      {{book_title}} <br>
+      {{author}} <br>
+      {% if translator %}
+        {{translator}} <br>
+      {% endif %}
+      {% if series %}
+        {{series}} <br>
+      {% endif %}
+      {% if book_type %}
+        {{book_type}} <br>
+      {% endif %}
+      {% if additional_info %}
+        {{additional_info}}
+      {% endif %}
+      </p>
+    </div>
+  </body>
+</html>

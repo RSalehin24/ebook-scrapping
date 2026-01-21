@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8">
+    <title>Table of Contents</title>
+  </head>
+  <body>
+    <div style="width: 100%; height: 100%; margin: 40px; font-family: Arial, sans-serif;">
+      <h2 style="margin-bottom:25px;">সূচিপত্র</h2>
+      <ul style="list-style-type: none; padding-left: 0;">
+        {% for lesson_title, lesson_file in lessons %}
+          <li style="margin: 5px 0; ">
+            <a href="{{lesson_file}}" style="text-decoration: none;">{{lesson_title}}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </body>
+</html>
