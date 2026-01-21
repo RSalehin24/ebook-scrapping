@@ -190,12 +190,11 @@ def scrape_lesson_content(url):
 # -------------------------------
 def save_html(book_title, author, book_type, cover_image, main_content, lessons):
     html = f"""<html><head><meta charset='UTF-8'><title>{book_title}</title></head><body>"""
-    html += f"<h1>{book_title}</h1><h2>Author: {author}</h2><h4>{book_type}</h4>"
+    html += f"<h1>{book_title}</h1><h2>{author}</h2><h4>{book_type}</h4>"
 
     if cover_image:
         html += f"<img src='{cover_image}' alt='Book Cover' style='max-width:300px;'><br><br>"
-
-    html += "<h2>Introduction / Preview</h2>"
+    
     html += f"<div id='main_content'>{main_content}</div>"
 
     html += "<hr><h2>সূচিপত্র</h2><ul>"
