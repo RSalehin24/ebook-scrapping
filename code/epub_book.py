@@ -11,8 +11,9 @@ def create_epub(book_data):
         output_folder=book_data["output_folder"]
     )
     
-    cover_path = os.path.join(book_data["output_folder"], book_data["cover"])
-    builder.add_cover_page(cover_image_path=cover_path)
+    if book_data["cover"]:
+        cover_path = os.path.join(book_data["output_folder"], book_data["cover"])
+        builder.add_cover_page(cover_image_path=cover_path)
     builder.add_title_page()
     builder.add_info_page(translator="", additional_info="")
     builder.add_dedication_page(dedication_text="")
