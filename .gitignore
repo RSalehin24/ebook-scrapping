@@ -1,3 +1,5 @@
 .venv/
 .DS_Store
 code/config.py
+*__pycache__
+outputs/
