@@ -8,7 +8,7 @@ def main():
     if not data:
         exit(1)
 
-    create_html_book(data)
+    # create_html_book(data)
     create_epub(data)
 
     print("Book generation complete!")

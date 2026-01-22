@@ -22,15 +22,28 @@ class EpubBuilder:
         template = self.env.get_template(template_name)
         return template.render(**context)
 
-    def add_cover_page(self, cover=None):
-        html_content = self.render_template("cover.html", cover=cover)
-        c = epub.EpubHtml(title="Cover", file_name="cover.xhtml", content=html_content)
-        self.book.add_item(c)
-        self.chapters.append(c)
+    def add_cover_page(self, cover_image_path):
+        image_name = os.path.basename(cover_image_path)
+        
+        self.book.set_cover(image_name, open(cover_image_path, "rb").read())
+        
+        html_content = self.render_template(
+            "cover_page.html",
+            cover_image=image_name
+        )
+        
+        cover_page = epub.EpubHtml(
+            title="কভার",
+            file_name="cover_page.xhtml",
+            content=html_content
+        )
+
+        self.book.add_item(cover_page)
+        self.chapters.insert(0, cover_page)
 
     def add_title_page(self):
         html_content = self.render_template("title_page.html", book_title=self.book_title, author=self.author)
-        c = epub.EpubHtml(title="Title Page", file_name="title.xhtml", content=html_content)
+        c = epub.EpubHtml(title="শিরোনাম পৃষ্ঠা", file_name="title.xhtml", content=html_content)
         self.book.add_item(c)
         self.chapters.append(c)
 
@@ -44,25 +57,25 @@ class EpubBuilder:
             book_type=self.book_type,
             additional_info=additional_info
         )
-        c = epub.EpubHtml(title="Info", file_name="info.xhtml", content=html_content)
+        c = epub.EpubHtml(title="বই বিষয়ক তথ্য", file_name="info.xhtml", content=html_content)
         self.book.add_item(c)
         self.chapters.append(c)
 
     def add_dedication_page(self, dedication_text=""):
         html_content = self.render_template("dedication.html", dedication_text=dedication_text)
-        c = epub.EpubHtml(title="Dedication", file_name="dedication.xhtml", content=html_content)
+        c = epub.EpubHtml(title="উৎসর্গ", file_name="dedication.xhtml", content=html_content)
         self.book.add_item(c)
         self.chapters.append(c)
         
     def add_main_content_page(self, main_content):
         html_content = self.render_template("main_content.html", main_content=main_content)
-        c = epub.EpubHtml(title="Main Content", file_name="main_content.xhtml", content=html_content)
+        c = epub.EpubHtml(title="প্রস্তাবনা", file_name="main_content.xhtml", content=html_content)
         self.book.add_item(c)
         self.chapters.append(c)
 
     def add_toc_page(self, lessons):
         html_content = self.render_template("toc.html", lessons=lessons)
-        c = epub.EpubHtml(title="Contents", file_name="toc.xhtml", content=html_content)
+        c = epub.EpubHtml(title="সূচিপত্র", file_name="toc.xhtml", content=html_content)
         self.book.add_item(c)
         self.chapters.append(c)
 
@@ -76,7 +89,7 @@ class EpubBuilder:
 
     def build_epub(self, filename="book.epub"):
         self.book.toc = tuple(self.chapters)
-        self.book.spine = ["nav"] + self.chapters
+        self.book.spine = self.chapters
         self.book.add_item(epub.EpubNcx())
         self.book.add_item(epub.EpubNav())
         epub.write_epub(os.path.join(self.output_folder, filename), self.book)
