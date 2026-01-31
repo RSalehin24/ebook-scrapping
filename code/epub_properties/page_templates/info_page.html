@@ -7,22 +7,30 @@
   <body >
     <div style="width: 100%; height: 100%; margin: 100px 40px 60px 40px; font-family: Arial, sans-serif;">
       <style>a { text-decoration: none; }</style>
-      <p>
-      {{book_title}} <br>
-      {{author}} <br>
-      {% if translator %}
-        {{translator}} <br>
+      {% if scraped_book_info %}
+        <div>
+          {{ scraped_book_info | safe }}
+        </div>
+      {% elif scrapped_data %}
+        <p>
+        {{book_title}} <br>
+        {{author}} <br>
+        {% if translator %}
+          {{translator}} <br>
+        {% endif %}
+        {% if series %}
+          {{series}} <br>
+        {% endif %}
+        {% if book_type %}
+          {{book_type}} <br>
+        {% endif %}
+        {% if additional_info %}
+          {{additional_info}}
+        {% endif %}
+        </p>
+      {% else %}
+        <p>{{book_info}}</p>
       {% endif %}
-      {% if series %}
-        {{series}} <br>
-      {% endif %}
-      {% if book_type %}
-        {{book_type}} <br>
-      {% endif %}
-      {% if additional_info %}
-        {{additional_info}}
-      {% endif %}
-      </p>
     </div>
   </body>
 </html>

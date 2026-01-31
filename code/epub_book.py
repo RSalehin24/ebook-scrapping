@@ -2,7 +2,22 @@ import os
 from epub_properties.epub_builder import EpubBuilder
 
 def create_epub(book_data):
-    """Generate EPUB book from scraped data."""
+    """
+    Generate EPUB book from scraped data with hierarchical TOC.
+    
+    Expected book_data structure:
+    {
+        "book_title": str,
+        "author": str,
+        "series": str,
+        "book_type": str,
+        "cover": str,
+        "main_content": str,
+        "toc": list,              # Hierarchical TOC structure
+        "content_items": list,     # List of content dictionaries
+        "output_folder": str
+    }
+    """
     builder = EpubBuilder(
         book_title=book_data["book_title"],
         author=book_data["author"],
@@ -11,20 +26,49 @@ def create_epub(book_data):
         output_folder=book_data["output_folder"]
     )
     
+    # Add cover page if available
     if book_data["cover"]:
         cover_path = os.path.join(book_data["output_folder"], book_data["cover"])
-        builder.add_cover_page(cover_image_path=cover_path)
+        if os.path.exists(cover_path):
+            builder.add_cover_page(cover_image_path=cover_path)
+    
+    # Add standard pages
     builder.add_title_page()
-    builder.add_info_page(translator="", additional_info="")
-    builder.add_dedication_page(dedication_text="")
-    builder.add_main_content_page(main_content=book_data["main_content"])
+    
+    # Add info page with extracted book info if available
+    book_info = book_data.get("book_info", "")
+    builder.add_info_page(translator="", additional_info="", scraped_book_info=book_info)
+    
+    dedication_text = book_data.get("dedication", "")
+    builder.add_dedication_page(dedication_text=dedication_text)
+    
+    # Add main content if available
+    if book_data["main_content"]:
+        builder.add_main_content_page(main_content=book_data["main_content"])
 
-    toc_lessons = [
-        (title, f"lesson_{i+1}.xhtml")
-        for i, (title, _) in enumerate(book_data["lessons"])
-    ]
-    builder.add_toc_page(lessons=toc_lessons)
-    builder.add_lesson_pages(book_data["lessons"])
+    # Convert content_items to (title, content) tuples for lesson pages
+    lessons = []
+    for item in book_data["content_items"]:
+        lessons.append((item["title"], item["content"]))
+    
+    # Add hierarchical TOC page (if the method exists in your EpubBuilder)
+    # Otherwise, fall back to regular TOC
+    if hasattr(builder, 'add_hierarchical_toc_page'):
+        builder.add_hierarchical_toc_page(
+            toc_structure=book_data["toc"],
+            content_items=book_data["content_items"]
+        )
+    else:
+        # Fallback: Build simple TOC lessons list
+        toc_lessons = [
+            (title, f"lesson_{i+1}.xhtml")
+            for i, (title, _) in enumerate(lessons)
+        ]
+        builder.add_toc_page(lessons=toc_lessons)
+    
+    # Add lesson pages
+    builder.add_lesson_pages(lessons)
 
+    # Build and save EPUB
     epub_filename = f"{book_data['book_title']}.epub"
     builder.build_epub(epub_filename)
